@@ -8,6 +8,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
+use App\Http\Requests\OrderRequest;
+
 class OrderController extends Controller
 {
     protected OrderService $orderService;
@@ -23,14 +25,10 @@ class OrderController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(OrderRequest $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'items' => 'required|array|min:1',
-                'items.*.product_id' => 'required|integer',
-                'items.*.quantity' => 'required|integer|min:1',
-            ]);
+            $validated = $request->validated();
 
             $order = $this->orderService->createOrder($validated, $request->user()->id);
 

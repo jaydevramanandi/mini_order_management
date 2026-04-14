@@ -7,6 +7,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
+use App\Http\Requests\ProductCreateRequest;
+use App\Http\Requests\ProductUpdateRequest;
+
 class ProductController extends Controller
 {
     /**
@@ -76,15 +79,10 @@ class ProductController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(ProductCreateRequest $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'price' => 'required|numeric|min:0',
-                'stock' => 'required|integer|min:0',
-            ]);
+            $validated = $request->validated();
 
             $product = Product::create($validated);
 
@@ -112,17 +110,12 @@ class ProductController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(ProductUpdateRequest $request, int $id): JsonResponse
     {
         try {
             $product = Product::findOrFail($id);
 
-            $validated = $request->validate([
-                'name' => 'sometimes|string|max:255',
-                'description' => 'nullable|string',
-                'price' => 'sometimes|numeric|min:0',
-                'stock' => 'sometimes|integer|min:0',
-            ]);
+            $validated = $request->validated();
 
             $product->update($validated);
 
